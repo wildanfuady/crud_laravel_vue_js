@@ -18,7 +18,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(article, index) in articles" :key="article.id">
+                                <tr v-for="(article, index) in articles.data" :key="article.id">
                                     <td width="50" class="text-center">{{ index + 1 }}</td>
                                     <td>{{ article.title }}</td>
                                     <td width="200" class="text-center">
@@ -32,6 +32,7 @@
                             </tbody>
                         </table>
                     </div>
+                    <pagination :data="articles" @pagination-change-page="getResults"></pagination>
                 </div>
             </div>
             </div>
@@ -40,19 +41,25 @@
 </template>
 
 <script>
-  export default {
-      data() {
+export default {
+    data() {
         return {
-          articles: []
+          articles: {}
         }
-      },
-      created() {
-        let uri = 'api/articles';
-        this.axios.get(uri).then(response => {
-            this.articles = response.data;
-        });
+    },
+    created() {
+            this.getResults();
     },
     methods: {
+        getResults(page){
+
+            let uri = 'api/articles?page=' + page;
+            this.axios.get(uri).then(response => {
+                        return response.data;
+                    }).then(data => {
+                        this.articles = data;
+                    });
+        },
         deletePost(id)
         {
             this.$swal.fire({
